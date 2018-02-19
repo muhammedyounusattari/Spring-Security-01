@@ -1,4 +1,4 @@
-package config;
+package younus.attari.config;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -25,35 +25,42 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
 @EnableWebSecurity
+//@EnableWebMvc
+@ComponentScan("younus.attari")
 public class ConfiguratoinMainClass extends WebSecurityConfigurerAdapter implements WebApplicationInitializer {
 
 	@Bean
 	public ViewResolver getBean() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-		viewResolver.setSuffix("/WEB-INF/views/");
-		viewResolver.setPrefix(".jsp");
+		viewResolver.setPrefix("/WEB-INF/views/");
+		viewResolver.setSuffix(".jsp");
 		return viewResolver;
 	}
 
 	@Autowired
-	public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication().withUser("in28Minutes").password("dummy").roles("USER", "ADMIN");
+	public void configureGlobalSecurity(AuthenticationManagerBuilder auth)
+			throws Exception {
+		auth.inMemoryAuthentication().withUser("admin").password("admin")
+				.roles("USER", "ADMIN");
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/login").permitAll().antMatchers("/").access("hasRole('USER')").and()
-				.formLogin().and().exceptionHandling().accessDeniedPage("/access-denied");
+		http.authorizeRequests().antMatchers("/login").permitAll()
+				.antMatchers("/").access("hasRole('USER')").and()
+				.formLogin().and().exceptionHandling()
+				.accessDeniedPage("/access-denied");
 	}
 
 	@Override
 	public void onStartup(ServletContext context) throws ServletException {
+
 		AnnotationConfigWebApplicationContext webContext = new AnnotationConfigWebApplicationContext();
-		webContext.setConfigLocation("config");
+		webContext.setConfigLocation("younus.attari.config");
 
-		ContextLoaderListener contextLoadListener = new ContextLoaderListener(webContext);
-		context.addListener(contextLoadListener);
-
+		ContextLoaderListener contextLoadListner = new ContextLoaderListener(webContext);
+		context.addListener(contextLoadListner);
+		
 		ServletRegistration.Dynamic dispatcher = context.addServlet("Dispatcher", new DispatcherServlet(webContext));
 		dispatcher.setLoadOnStartup(1);
 		dispatcher.addMapping("/");

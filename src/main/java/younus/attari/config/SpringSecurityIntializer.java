@@ -1,4 +1,4 @@
-package config;
+package younus.attari.config;
 
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 
